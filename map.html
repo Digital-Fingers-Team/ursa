@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>URSA · Map</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4QZ8S2N9g6R5n8JfF4qzQ6rZ8rkaZ7r3lSkG2zF0XQ=" crossorigin=""/>
+</head>
+<body class="dark">
+  <div class="container">
+    <div id="page-map" class="page active-page">
+      <h2>🗺️ Interactive map of Benha</h2>
+      <div class="glass-card" style="padding:20px;">
+        <div class="map-container" style="height:500px;">
+          <div id="leafletMap" style="width:100%;height:100%;border-radius:32px;overflow:hidden;"></div>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:12px;">
+          <button class="glass-btn small" id="useMapLocationBtn"><i class="fas fa-location-crosshairs"></i> Use my location</button>
+        </div>
+        <div id="policeList" style="margin-top:16px;"></div>
+      </div>
+    </div>
+  </div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-o9N1j7kGStbQXN6CEpZ2vYbFQv3u1M4nUjWvZ2z8qkM=" crossorigin=""></script>
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      var defaultCenter = { lat: 30.4667, lon: 31.1848 };
+      var map = null;
+      var policeLayer = null;
+      var userMarker = null;
+      var leafletAvailable = false;
+      var mapEl = document.getElementById('leafletMap');
+      var wrapper = document.querySelector('.map-container');
+      function toRad(v){return v*Math.PI/180;}
+      function haversine(lat1, lon1, lat2, lon2){
+        var R=6371e3;var dLat=toRad(lat2-lat1);var dLon=toRad(lon2-lon1);
+        var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)*Math.sin(dLon/2);
+        var c=2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+        return R*c;
+      }
+      function buildPoliceList(list){
+        var container = document.getElementById('policeList');
+        if (!container) return;
+        if (list.length===0){
+          container.innerHTML = '<div class="empty-state">No police stations found nearby</div>';
+          return;
+        }
+        var html = '<div class="profile-summary">';
+        list.slice(0,8).forEach(function(item){
+          html += '<div class="profile-chip" style="cursor:pointer" data-lat="'+item.lat+'" data-lon="'+item.lon+'"><i class="fas fa-shield-alt" style="margin-right:6px;"></i>'+item.name+' · '+Math.round(item.dist)+' m</div>';
+        });
+        html += '</div>';
+        container.innerHTML = html;
+        container.querySelectorAll('.profile-chip').forEach(function(chip){
+          chip.addEventListener('click', function(){
+            var lat = parseFloat(this.getAttribute('data-lat'));
+            var lon = parseFloat(this.getAttribute('data-lon'));
+            updateCenter(lat, lon);
+          });
+        });
+      }
+      function fetchPolice(center){
+        var query = '[out:json][timeout:25];(node["amenity"="police"](around:6000,'+center.lat+','+center.lon+');way["amenity"="police"](around:6000,'+center.lat+','+center.lon+');relation["amenity"="police"](around:6000,'+center.lat+','+center.lon+'););out center;';
+        return fetch('https://overpass-api.de/api/interpreter?data='+encodeURIComponent(query))
+          .then(function(r){ return r.ok ? r.json() : Promise.reject(new Error('Overpass error')); })
+          .then(function(data){
+            var list = [];
+            (data.elements||[]).forEach(function(el){
+              var lat = el.lat || (el.center && el.center.lat);
+              var lon = el.lon || (el.center && el.center.lon);
+              if (lat != null && lon != null){
+                var name = (el.tags && (el.tags.name || el.tags['name:en'] || el.tags['name:ar'])) || 'Police Station';
+                var dist = haversine(center.lat, center.lon, lat, lon);
+                list.push({ name:name, lat:lat, lon:lon, dist:dist });
+                if (leafletAvailable && policeLayer) L.marker([lat, lon]).addTo(policeLayer).bindPopup('<strong>'+name+'</strong><br>'+lat.toFixed(5)+', '+lon.toFixed(5));
+              }
+            });
+            list.sort(function(a,b){return a.dist-b.dist;});
+            buildPoliceList(list);
+          })
+          .catch(function(){
+            var container = document.getElementById('policeList');
+            if (container) container.innerHTML = '<div class="empty-state">Failed to load police data</div>';
+          });
+      }
+      function setUserCenterLeaflet(lat, lon){
+        if (userMarker){ map.removeLayer(userMarker); }
+        userMarker = L.marker([lat, lon], { icon: L.icon({ iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png', iconAnchor: [12, 41] }) }).addTo(map).bindPopup('You are here');
+        map.setView([lat, lon], 14);
+        policeLayer && policeLayer.clearLayers();
+        fetchPolice({lat:lat, lon:lon});
+      }
+      function updateIframeCenter(lat, lon){
+        var frame = document.getElementById('fallbackMapFrame');
+        if (!frame) return;
+        var lonMin = (lon - 0.02).toFixed(6);
+        var latMin = (lat - 0.02).toFixed(6);
+        var lonMax = (lon + 0.02).toFixed(6);
+        var latMax = (lat + 0.02).toFixed(6);
+        frame.src = 'https://www.openstreetmap.org/export/embed.html?bbox=' + encodeURIComponent(lonMin) + '%2C' + encodeURIComponent(latMin) + '%2C' + encodeURIComponent(lonMax) + '%2C' + encodeURIComponent(latMax) + '&layer=mapnik&marker=' + encodeURIComponent(lat) + '%2C' + encodeURIComponent(lon);
+        fetchPolice({lat:lat, lon:lon});
+      }
+      function updateCenter(lat, lon){
+        if (leafletAvailable) setUserCenterLeaflet(lat, lon);
+        else updateIframeCenter(lat, lon);
+      }
+      try {
+        if (typeof L === 'undefined') throw new Error('Leaflet not available');
+        leafletAvailable = true;
+        map = L.map('leafletMap');
+        var tile = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' });
+        tile.addTo(map);
+        map.setView([defaultCenter.lat, defaultCenter.lon], 13);
+        policeLayer = L.layerGroup().addTo(map);
+        fetchPolice(defaultCenter);
+      } catch (e) {
+        if (wrapper) {
+          wrapper.innerHTML = '<iframe id="fallbackMapFrame" title="Benha Full Map" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.openstreetmap.org/export/embed.html?bbox=31.1300%2C30.4450%2C31.2200%2C30.4900&layer=mapnik&marker=30.4667%2C31.1848" style="width:100%;height:100%;border:0;"></iframe>';
+        }
+        fetchPolice(defaultCenter);
+      }
+      function tryGeolocationThenIp(resolveCenter){
+        if (navigator.geolocation){
+          navigator.geolocation.getCurrentPosition(function(pos){
+            resolveCenter(pos.coords.latitude, pos.coords.longitude);
+          }, function(){
+            fetch('https://ipapi.co/json/')
+              .then(function(r){ return r.ok ? r.json() : Promise.reject(); })
+              .then(function(j){ if (j && j.latitude && j.longitude) resolveCenter(j.latitude, j.longitude); })
+              .catch(function(){});
+          }, { enableHighAccuracy:true, timeout:8000 });
+        } else {
+          fetch('https://ipapi.co/json/')
+            .then(function(r){ return r.ok ? r.json() : Promise.reject(); })
+            .then(function(j){ if (j && j.latitude && j.longitude) resolveCenter(j.latitude, j.longitude); })
+            .catch(function(){});
+        }
+      }
+      tryGeolocationThenIp(function(lat, lon){ updateCenter(lat, lon); });
+      var useBtn = document.getElementById('useMapLocationBtn');
+      if (useBtn){
+        useBtn.addEventListener('click', function(){
+          tryGeolocationThenIp(function(lat, lon){ updateCenter(lat, lon); });
+        });
+      }
+    });
+  </script>
+</body>
+</html>

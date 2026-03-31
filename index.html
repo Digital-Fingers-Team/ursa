@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URSA · Choose Access</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #05201f, #0a2a28);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .portal-container {
+            max-width: 1000px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .logo {
+            margin-bottom: 50px;
+        }
+
+        .logo-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #2d8f77, #4dbfa3);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2.5rem;
+            box-shadow: 0 0 30px rgba(77, 255, 158, 0.3);
+        }
+
+        .logo h1 {
+            font-size: 2.5rem;
+            color: white;
+            letter-spacing: -0.02em;
+        }
+
+        .logo p {
+            color: #b4d9d4;
+            margin-top: 8px;
+        }
+
+        .cards {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .card {
+            background: rgba(8, 38, 36, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(77, 255, 158, 0.25);
+            border-radius: 28px;
+            padding: 40px 30px;
+            width: 320px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: #4dbfa3;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .admin-card .card-icon {
+            color: #ffaa44;
+        }
+
+        .reporter-card .card-icon {
+            color: #4dbfa3;
+        }
+
+        .card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 12px;
+            color: white;
+        }
+
+        .card p {
+            color: #b4d9d4;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .card-btn {
+            display: inline-block;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .admin-card .card-btn {
+            background: rgba(255, 170, 68, 0.2);
+            border: 1px solid #ffaa44;
+            color: #ffaa44;
+        }
+
+        .reporter-card .card-btn {
+            background: rgba(77, 191, 163, 0.2);
+            border: 1px solid #4dbfa3;
+            color: #4dbfa3;
+        }
+
+        .card:hover .card-btn {
+            transform: translateY(-2px);
+        }
+
+        .admin-card .card-btn:hover {
+            background: #ffaa44;
+            color: #05201f;
+        }
+
+        .reporter-card .card-btn:hover {
+            background: #4dbfa3;
+            color: #05201f;
+        }
+
+        footer {
+            margin-top: 60px;
+            color: #6a8f89;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 768px) {
+            .cards {
+                gap: 20px;
+            }
+            .card {
+                width: 280px;
+                padding: 30px 20px;
+            }
+            .logo h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar" style="position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:12px 24px;background:rgba(8,38,36,0.75);backdrop-filter:blur(10px);border-bottom:1px solid rgba(77,255,158,0.25);z-index:1000;">
+        <div class="brand" style="color:#4dbfa3;font-weight:700;letter-spacing:0.5px;">URSA</div>
+        <div class="top-actions" style="display:flex;gap:12px;">
+            <button id="langToggle" data-i18n="lang_btn" style="border:1px solid rgba(77,255,158,0.35);color:#4dbfa3;background:rgba(77,191,163,0.12);padding:10px 16px;border-radius:28px;font-weight:600;cursor:pointer;">العربية</button>
+            <a href="login.html" data-i18n="login_btn" style="border:1px solid rgba(77,255,158,0.35);color:#4dbfa3;background:transparent;padding:10px 16px;border-radius:28px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;">تسجيل الدخول</a>
+            <button id="openSignup" data-i18n="signup_btn" style="border:1px solid rgba(77,255,158,0.35);color:#05201f;background:#4dbfa3;padding:10px 16px;border-radius:28px;font-weight:700;cursor:pointer;">إنشاء حساب</button>
+        </div>
+    </div>
+    <div class="portal-container">
+        <div class="logo">
+            <h2 class="welcome" data-i18n="welcome" style="color:#ffffff;margin-bottom:8px;font-size:1.6rem;">أهلاً بكم</h2>
+            <h1>URSA</h1>
+            <p data-i18n="tagline">منصة موحدة للإبلاغ والسلامة</p>
+        </div>
+        <div class="project-info" style="max-width:860px;margin:0 auto 20px;color:#b4d9d4;">
+            <h3 data-i18n="project_title" style="color:#ffffff;margin-bottom:8px;">عن المشروع</h3>
+            <p class="project-desc" data-i18n="project_desc">URSA هي منصة رقمية موحدة تمكّن المواطنين والجهات المسؤولة من الإبلاغ عن الحوادث والمخاطر وإدارة البلاغات بكفاءة، مع توفير بوابة للمسؤولين ولوحة للمواطنين لرفع البلاغات ومتابعتها.</p>
+        </div>
+
+        
+
+        <footer>
+            <p data-i18n="footer">© 2024 URSA · منصة سلامة المدينة</p>
+        </footer>
+    </div>
+
+    <div id="signupModal" class="modal hidden" style="position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:2000;">
+        <div class="modal-content" style="width:100%;max-width:520px;background:rgba(8,38,36,0.95);border:1px solid rgba(77,255,158,0.25);border-radius:20px;padding:24px;color:#ffffff;">
+            <h3 data-i18n="signup_title">إنشاء حساب</h3>
+            <form id="signupForm">
+                <div class="form-group" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+                    <label for="name" data-i18n="name_label" style="color:#b4d9d4;">الاسم الكامل</label>
+                    <input id="name" type="text" required style="padding:10px 12px;border-radius:10px;border:1px solid rgba(77,255,158,0.25);background:rgba(8,38,36,0.6);color:#ffffff;">
+                </div>
+                <div class="form-group" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+                    <label for="email" data-i18n="email_label" style="color:#b4d9d4;">البريد الإلكتروني</label>
+                    <input id="email" type="email" required style="padding:10px 12px;border-radius:10px;border:1px solid rgba(77,255,158,0.25);background:rgba(8,38,36,0.6);color:#ffffff;">
+                </div>
+                <div class="form-group" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+                    <label for="password" data-i18n="password_label" style="color:#b4d9d4;">كلمة المرور</label>
+                    <input id="password" type="password" required style="padding:10px 12px;border-radius:10px;border:1px solid rgba(77,255,158,0.25);background:rgba(8,38,36,0.6);color:#ffffff;">
+                </div>
+                <div class="form-group" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+                    <label for="idUpload" data-i18n="id_label" style="color:#b4d9d4;">صورة البطاقة الشخصية</label>
+                    <input id="idUpload" type="file" accept="image/*" required style="padding:10px 12px;border-radius:10px;border:1px solid rgba(77,255,158,0.25);background:rgba(8,38,36,0.6);color:#ffffff;">
+                </div>
+                <div class="form-actions" style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px;">
+                    <button type="submit" class="submit-btn" data-i18n="submit_btn" style="border:1px solid rgba(77,255,158,0.35);color:#05201f;background:#4dbfa3;padding:10px 16px;border-radius:28px;font-weight:700;cursor:pointer;">إنشاء الحساب</button>
+                    <button type="button" id="closeSignup" class="cancel-btn" data-i18n="cancel_btn" style="border:1px solid rgba(77,255,158,0.35);color:#4dbfa3;background:transparent;padding:10px 16px;border-radius:28px;font-weight:600;cursor:pointer;">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        
+        var translations = {
+            ar: {
+                welcome: 'أهلاً بكم',
+                tagline: 'منصة موحدة للإبلاغ والسلامة',
+                project_title: 'عن المشروع',
+                project_desc: 'URSA هي منصة رقمية موحدة تمكّن المواطنين والجهات المسؤولة من الإبلاغ عن الحوادث والمخاطر وإدارة البلاغات بكفاءة، مع توفير بوابة للمسؤولين ولوحة للمواطنين لرفع البلاغات ومتابعتها.',
+                admin_title: 'مسؤول النظام',
+                admin_desc: 'دخول لوحة التحكم لإدارة البلاغات والمستخدمين وإعدادات النظام.',
+                admin_btn: 'دخول لوحة المسؤول',
+                reporter_title: 'مواطن / مُبلغ',
+                reporter_desc: 'يمكنك رفع البلاغات، متابعة الشكاوى الخاصة بك، والوصول إلى خدمات الطوارئ.',
+                reporter_btn: 'الدخول إلى بوابة المواطن',
+                footer: '© 2024 URSA · منصة سلامة المدينة',
+                signup_btn: 'إنشاء حساب',
+                login_btn: 'تسجيل الدخول',
+                lang_btn: 'English',
+                signup_title: 'إنشاء حساب',
+                name_label: 'الاسم الكامل',
+                email_label: 'البريد الإلكتروني',
+                password_label: 'كلمة المرور',
+                id_label: 'صورة البطاقة الشخصية',
+                submit_btn: 'إنشاء الحساب',
+                cancel_btn: 'إلغاء',
+                id_required: 'يجب رفع صورة البطاقة الشخصية'
+            },
+            en: {
+                welcome: 'Welcome',
+                tagline: 'Unified Reporting & Safety Application',
+                project_title: 'About the Project',
+                project_desc: 'URSA is a unified digital platform enabling citizens and authorities to report incidents and hazards and manage cases efficiently, with dedicated portals for admins and citizens.',
+                admin_title: 'Admin',
+                admin_desc: 'Access the admin dashboard to manage reports, users, and system settings.',
+                admin_btn: 'Enter Admin Panel',
+                reporter_title: 'Reporter',
+                reporter_desc: 'Submit safety reports, track your complaints, and access emergency services.',
+                reporter_btn: 'Enter Reporter Portal',
+                footer: '© 2024 URSA · City Safety Platform',
+                signup_btn: 'Sign Up',
+                login_btn: 'Log In',
+                lang_btn: 'العربية',
+                signup_title: 'Create Account',
+                name_label: 'Full Name',
+                email_label: 'Email',
+                password_label: 'Password',
+                id_label: 'ID Card Image',
+                submit_btn: 'Create Account',
+                cancel_btn: 'Cancel',
+                id_required: 'Please upload your ID card image'
+            }
+        };
+        function applyLanguage(lang) {
+            document.documentElement.lang = lang === 'ar' ? 'ar' : 'en';
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+            var elements = document.querySelectorAll('[data-i18n]');
+            elements.forEach(function(el) {
+                var key = el.getAttribute('data-i18n');
+                var text = translations[lang][key];
+                if (typeof text === 'string') {
+                    el.textContent = text;
+                }
+            });
+            localStorage.setItem('ursa_lang', lang);
+        }
+        var savedLang = localStorage.getItem('ursa_lang') || 'ar';
+        applyLanguage(savedLang);
+        var langToggle = document.getElementById('langToggle');
+        langToggle.addEventListener('click', function() {
+            var current = document.documentElement.lang === 'ar' ? 'ar' : 'en';
+            var next = current === 'ar' ? 'en' : 'ar';
+            applyLanguage(next);
+        });
+        var openSignup = document.getElementById('openSignup');
+        var closeSignup = document.getElementById('closeSignup');
+        var signupModal = document.getElementById('signupModal');
+        openSignup.addEventListener('click', function() {
+            signupModal.style.display = 'flex';
+        });
+        closeSignup.addEventListener('click', function() {
+            signupModal.style.display = 'none';
+        });
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            var file = document.getElementById('idUpload').files[0];
+            if (!file) {
+                var lang = document.documentElement.lang === 'ar' ? 'ar' : 'en';
+                alert(translations[lang]['id_required']);
+                return;
+            }
+            signupModal.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
