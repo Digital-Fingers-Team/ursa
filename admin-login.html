@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>URSA · تسجيل دخول الأدمن</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #05201f, #0a2a28);
+    }
+    .auth-topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      background: rgba(8, 38, 36, 0.78);
+      border-bottom: 1px solid rgba(77, 255, 158, 0.18);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+    }
+    .auth-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .container {
+      width: 100%;
+      max-width: 560px;
+      margin-top: 100px;
+    }
+    .helper-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+  </style>
+</head>
+<body class="dark login-page" data-admin-view="login">
+  <div class="auth-topbar">
+    <div class="logo-container">
+      <div class="logo-image"><img src="URSA 3.png" alt="URSA Logo" /></div>
+      <div class="logo">URSA</div>
+    </div>
+    <div class="auth-actions">
+      <button id="langToggle" class="glass-btn small" data-i18n="lang_btn">English</button>
+      <a href="index.html" class="glass-btn small" style="text-decoration:none;" data-i18n="back_home">العودة للرئيسية</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="glass-card auth-card">
+      <h1 style="text-align:center; margin-bottom:16px;">
+        <i class="fas fa-user-shield" style="color:var(--primary);"></i>
+        <span data-i18n="login_title">تسجيل دخول الأدمن</span>
+      </h1>
+      <p style="text-align:center; color:var(--text-secondary); margin-bottom:24px;" data-i18n="login_desc">سجّل الدخول باسم المستخدم وكلمة المرور والجهة التابعة للحساب.</p>
+
+      <div class="error-message" id="authError" style="display:none;"></div>
+
+      <form id="adminLoginForm">
+        <label for="adminUsername" data-i18n="username_label">اسم المستخدم</label>
+        <input class="glass-input" id="adminUsername" type="text" data-i18n-placeholder="username_placeholder" placeholder="مثال: pm_admin" required />
+
+        <label for="adminPassword" data-i18n="password_label">كلمة المرور</label>
+        <input class="glass-input" id="adminPassword" type="password" placeholder="••••••••" required />
+
+        <label for="adminLoginMinistry" data-i18n="ministry_label">الجهة / الوزارة / مجال العمل</label>
+        <select class="glass-select" id="adminLoginMinistry" data-ministry-select="true" data-include-other="false" required></select>
+
+        <button type="submit" class="glass-btn primary" style="width:100%;" data-i18n="login_btn">تسجيل الدخول</button>
+      </form>
+
+      <div class="helper-links">
+        <a href="admin-register.html" class="glass-btn" style="text-decoration:none;" data-i18n="register_btn">إنشاء حساب أدمن</a>
+        <a href="index.html" class="glass-btn" style="text-decoration:none;" data-i18n="back_home">العودة للرئيسية</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="platform-core.js"></script>
+  <script src="admin-script.js"></script>
+</body>
+</html>

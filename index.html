@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URSA · Choose Access</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #05201f, #0a2a28);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .portal-container {
+            max-width: 1000px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .logo {
+            margin-bottom: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .logo-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #2d8f77, #4dbfa3);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2.5rem;
+            box-shadow: 0 0 30px rgba(77, 255, 158, 0.3);
+        }
+
+        .logo h1 {
+            font-size: 2.5rem;
+            color: white;
+            letter-spacing: -0.02em;
+        }
+
+        .logo p {
+            color: #b4d9d4;
+            margin-top: 8px;
+        }
+
+        .project-info {
+            max-width: 860px;
+            margin: 0 auto 20px;
+            color: #b4d9d4;
+            text-align: center;
+            line-height: 1.9;
+        }
+
+        .project-info h3 {
+            color: #ffffff;
+            margin-bottom: 12px;
+        }
+
+        .project-desc {
+            white-space: pre-line;
+        }
+
+        .cards {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .card {
+            background: rgba(8, 38, 36, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(77, 255, 158, 0.25);
+            border-radius: 28px;
+            padding: 40px 30px;
+            width: 320px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: #4dbfa3;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .admin-card .card-icon {
+            color: #ffaa44;
+        }
+
+        .reporter-card .card-icon {
+            color: #4dbfa3;
+        }
+
+        .card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 12px;
+            color: white;
+        }
+
+        .card p {
+            color: #b4d9d4;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .card-btn {
+            display: inline-block;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .admin-card .card-btn {
+            background: rgba(255, 170, 68, 0.2);
+            border: 1px solid #ffaa44;
+            color: #ffaa44;
+        }
+
+        .reporter-card .card-btn {
+            background: rgba(77, 191, 163, 0.2);
+            border: 1px solid #4dbfa3;
+            color: #4dbfa3;
+        }
+
+        .card:hover .card-btn {
+            transform: translateY(-2px);
+        }
+
+        .admin-card .card-btn:hover {
+            background: #ffaa44;
+            color: #05201f;
+        }
+
+        .reporter-card .card-btn:hover {
+            background: #4dbfa3;
+            color: #05201f;
+        }
+
+        footer {
+            margin-top: 60px;
+            color: #6a8f89;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 768px) {
+            .cards {
+                gap: 20px;
+            }
+            .card {
+                width: 280px;
+                padding: 30px 20px;
+            }
+            .logo h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar" style="position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:12px 24px;background:rgba(8,38,36,0.75);backdrop-filter:blur(10px);border-bottom:1px solid rgba(77,255,158,0.25);z-index:1000;">
+        <div class="brand" style="color:#4dbfa3;font-weight:700;letter-spacing:0.5px;">URSA</div>
+        <div class="top-actions" style="display:flex;gap:12px;">
+            <button id="langToggle" data-i18n="lang_btn" style="border:1px solid rgba(77,255,158,0.35);color:#4dbfa3;background:rgba(77,191,163,0.12);padding:10px 16px;border-radius:28px;font-weight:600;cursor:pointer;">العربية</button>
+            <a href="login.html" data-i18n="login_btn" style="border:1px solid rgba(77,255,158,0.35);color:#4dbfa3;background:transparent;padding:10px 16px;border-radius:28px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;">تسجيل الدخول</a>
+        </div>
+    </div>
+    <div class="portal-container">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-shield-alt" aria-hidden="true"></i>
+            </div>
+            <h2 class="welcome" data-i18n="welcome" style="color:#ffffff;margin-bottom:8px;font-size:1.6rem;">أهلاً بكم</h2>
+            <h1>URSA</h1>
+            <p data-i18n="tagline">منصة موحدة للإبلاغ والسلامة</p>
+        </div>
+        <div class="project-info">
+            <h3 data-i18n="project_title">عن المشروع</h3>
+            <p class="project-desc" data-i18n="project_desc">ويُعد هذا المشروع منصة رقمية ذكية تهدف إلى تسهيل البلاغات المجتمعية المقدمة عبر مواقع التواصل الاجتماعي، حيث يقوم المستخدم بتصوير البلاغ أو الشكوى، ويعمل نظام الذكاء الاصطناعي على تصنيف الشكاوى وتحديد أولوياتها بناءً على تكرارها، مما يتيح للجهات المختصة التعامل مع القضايا الأكثر أهمية أولًا، ويقلل من انتشار البلاغات على مواقع التواصل، ويحافظ على صورة مصر أمام العالم ويعزز السياحة ويطمئن الزوار.
+
+ونظرًا لما لوحظ مؤخرًا من تداول واسع بين المواطنين لمقاطع الفيديو والصور المتعلقة بالمشكلات اليومية على منصات التواصل الاجتماعي، والتي سرعان ما تتحول إلى "ترند" يشاهده المصري وغير المصري، ما قد يؤثر سلبًا على صورة مصر ويثير قلق السياح، تأتي أهمية هذه المنصة في توفير بيئة آمنة لمعالجة هذه البلاغات. إذ تقتصر مشاهدة هذه المحتويات على الجهات المختصة داخل الوزارة، مما يضمن سرعة التعامل مع المشكلات قبل انتشارها، كما تساهم المنصة في الحد من إعادة نشر البلاغات على وسائل التواصل، بما يضمن المحافظة على الصورة الذهنية للبلاد وتشجيع السياحة، مع إمكانية اتخاذ الإجراءات القانونية المناسبة ضد المخالفين لإعادة النشر، وفقًا للأطر التنظيمية المعتمدة.
+
+ونُقر بأن جميع عناصر المشروع ملك فكري وتنفيذي للطالبة وفريق الأنامل الرقمية، ولا يجوز نسخها أو استغلالها كليًا أو جزئيًا دون موافقة رسمية مسبقة.</p>
+        </div>
+
+        
+
+        <footer>
+            <p data-i18n="footer">© 2024 URSA · منصة سلامة المدينة</p>
+        </footer>
+    </div>
+    <script>
+        
+        var translations = {
+            ar: {
+                welcome: 'أهلاً بكم',
+                tagline: 'منصة موحدة للإبلاغ والسلامة',
+                project_title: 'عن المشروع',
+                admin_title: 'مسؤول النظام',
+                admin_desc: 'دخول لوحة التحكم لإدارة البلاغات والمستخدمين وإعدادات النظام.',
+                admin_btn: 'دخول لوحة المسؤول',
+                reporter_title: 'مواطن / مُبلغ',
+                reporter_desc: 'يمكنك رفع البلاغات، متابعة الشكاوى الخاصة بك، والوصول إلى خدمات الطوارئ.',
+                reporter_btn: 'الدخول إلى بوابة المواطن',
+                footer: '© 2024 URSA · منصة سلامة المدينة',
+                login_btn: 'تسجيل الدخول',
+                lang_btn: 'English',
+                project_desc: 'ويُعد هذا المشروع منصة رقمية ذكية تهدف إلى تسهيل البلاغات المجتمعية المقدمة عبر مواقع التواصل الاجتماعي، حيث يقوم المستخدم بتصوير البلاغ أو الشكوى، ويعمل نظام الذكاء الاصطناعي على تصنيف الشكاوى وتحديد أولوياتها بناءً على تكرارها، مما يتيح للجهات المختصة التعامل مع القضايا الأكثر أهمية أولًا، ويقلل من انتشار البلاغات على مواقع التواصل، ويحافظ على صورة مصر أمام العالم ويعزز السياحة ويطمئن الزوار.\n\nونظرًا لما لوحظ مؤخرًا من تداول واسع بين المواطنين لمقاطع الفيديو والصور المتعلقة بالمشكلات اليومية على منصات التواصل الاجتماعي، والتي سرعان ما تتحول إلى "ترند" يشاهده المصري وغير المصري، ما قد يؤثر سلبًا على صورة مصر ويثير قلق السياح، تأتي أهمية هذه المنصة في توفير بيئة آمنة لمعالجة هذه البلاغات. إذ تقتصر مشاهدة هذه المحتويات على الجهات المختصة داخل الوزارة، مما يضمن سرعة التعامل مع المشكلات قبل انتشارها، كما تساهم المنصة في الحد من إعادة نشر البلاغات على وسائل التواصل، بما يضمن المحافظة على الصورة الذهنية للبلاد وتشجيع السياحة، مع إمكانية اتخاذ الإجراءات القانونية المناسبة ضد المخالفين لإعادة النشر، وفقًا للأطر التنظيمية المعتمدة.\n\nونُقر بأن جميع عناصر المشروع ملك فكري وتنفيذي للطالبة وفريق الأنامل الرقمية، ولا يجوز نسخها أو استغلالها كليًا أو جزئيًا دون موافقة رسمية مسبقة.'
+            },
+            en: {
+                welcome: 'Welcome',
+                tagline: 'Unified Reporting & Safety Application',
+                project_title: 'About the Project',
+                project_desc: 'This project is an intelligent digital platform designed to streamline community reports submitted through social media. Users capture a report or complaint, and the AI system classifies complaints and prioritizes them based on recurrence, enabling authorities to address the most critical issues first, reducing the spread of reports on social platforms, protecting Egypt\'s image globally, supporting tourism, and reassuring visitors.\n\nGiven the recent widespread circulation of videos and images about everyday problems on social media, which often become trends seen by Egyptians and non-Egyptians alike, potentially harming Egypt\'s image and causing concern for tourists, this platform provides a secure environment for handling such reports. Access to this content is limited to the competent authorities within the ministry, ensuring faster intervention before issues spread. The platform also helps reduce reposting on social media, preserving the country\'s public image, encouraging tourism, and allowing appropriate legal action against unauthorized reposting within approved regulatory frameworks.\n\nWe affirm that all elements of the project are the intellectual and executive property of the student and the Digital Fingers team and may not be copied or exploited in whole or in part without prior formal approval.',
+                admin_title: 'Admin',
+                admin_desc: 'Access the admin dashboard to manage reports, users, and system settings.',
+                admin_btn: 'Enter Admin Panel',
+                reporter_title: 'Reporter',
+                reporter_desc: 'Submit safety reports, track your complaints, and access emergency services.',
+                reporter_btn: 'Enter Reporter Portal',
+                footer: '© 2024 URSA · City Safety Platform',
+                login_btn: 'Log In',
+                lang_btn: 'العربية'
+            }
+        };
+        function applyLanguage(lang) {
+            document.documentElement.lang = lang === 'ar' ? 'ar' : 'en';
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+            var elements = document.querySelectorAll('[data-i18n]');
+            elements.forEach(function(el) {
+                var key = el.getAttribute('data-i18n');
+                var text = translations[lang][key];
+                if (typeof text === 'string') {
+                    el.textContent = text;
+                }
+            });
+            localStorage.setItem('ursa_lang', lang);
+        }
+        var savedLang = localStorage.getItem('ursa_lang') || 'ar';
+        applyLanguage(savedLang);
+        var langToggle = document.getElementById('langToggle');
+        langToggle.addEventListener('click', function() {
+            var current = document.documentElement.lang === 'ar' ? 'ar' : 'en';
+            var next = current === 'ar' ? 'en' : 'ar';
+            applyLanguage(next);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>URSA · البلاغات</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+  <style>
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 14px; text-align: start; border-bottom: 1px solid rgba(77, 255, 158, 0.2); color: var(--text-primary); vertical-align: top; }
+    th { color: var(--primary); font-weight: 600; }
+    .action-btn { padding: 8px 12px; border: none; border-radius: 10px; cursor: pointer; font-size: 0.85rem; background: rgba(77, 191, 163, 0.18); color: var(--text-primary); }
+    .empty-state { text-align: center; padding: 40px; color: var(--text-secondary); }
+  </style>
+</head>
+<body class="dark" data-admin-view="reports">
+  <div class="container">
+    <div class="glass-card" style="margin-bottom:20px;">
+      <h1 id="pageTitle" style="font-size:3rem; margin-bottom:10px;">إدارة البلاغات</h1>
+      <p id="pageSubtitle" style="color:var(--text-secondary);"></p>
+    </div>
+    <div class="glass-card">
+      <div id="reportsList"></div>
+    </div>
+  </div>
+  <script src="platform-core.js"></script>
+  <script src="admin-script.js"></script>
+</body>
+</html>
