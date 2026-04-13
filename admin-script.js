@@ -731,6 +731,36 @@
     }, { once: true });
   }
 
+  function showImageSourceModal(imageSrc) {
+    if (!imageSrc) {
+      return;
+    }
+    var modal = document.createElement("div");
+    modal.className = "overlay show";
+    modal.style.display = "flex";
+    modal.style.alignItems = "center";
+    modal.style.justifyContent = "center";
+    modal.style.zIndex = "3000";
+    modal.onclick = function () {
+      modal.remove();
+    };
+
+    var media = document.createElement("img");
+    media.src = imageSrc;
+    media.alt = "ID Card";
+    media.style.maxWidth = "90%";
+    media.style.maxHeight = "90%";
+    media.style.borderRadius = "20px";
+    media.style.boxShadow = "0 0 50px rgba(0,0,0,0.8)";
+    media.style.border = "2px solid var(--primary)";
+    media.onclick = function (event) {
+      event.stopPropagation();
+    };
+
+    modal.appendChild(media);
+    document.body.appendChild(modal);
+  }
+
   function renderRecentActivity() {
     var container = document.getElementById("recentActivity");
     if (!container) {
@@ -887,9 +917,11 @@
                 td(item.nationalId) +
                 td(item.phone) +
                 '<td>' +
-                  (item.idCardImage
-                    ? '<button class="action-btn" data-action="view-image" data-image="' + escapeHtml(item.idCardImage) + '">' + escapeHtml(t("view_id_card")) + "</button>"
-                    : "-") +
+                  (item.idCardAttachmentId
+                    ? '<button class="action-btn" data-action="view-attachment" data-attachment-id="' + escapeHtml(item.idCardAttachmentId) + '">' + escapeHtml(t("view_id_card")) + "</button>"
+                    : item.idCardImage
+                      ? '<button class="action-btn" data-action="view-image" data-image="' + escapeHtml(item.idCardImage) + '">' + escapeHtml(t("view_id_card")) + "</button>"
+                      : "-") +
                 "</td>" +
               "</tr>"
             );
@@ -940,7 +972,12 @@
             td(report.category || "-") +
             td(report.description || "-") +
             td(report.location || "-") +
-            td(getStatusLabel(report.status)) +
+            "<td>" +
+              '<select class="action-btn status-select" data-action="update-report-status" data-report-id="' + escapeHtml(report.id) + '" style="background: rgba(77, 255, 158, 0.1); border: 1px solid rgba(77, 255, 158, 0.2); color: var(--text-primary); cursor: pointer; outline: none;">' +
+                '<option value="pending"' + (report.status === "pending" ? " selected" : "") + ">" + escapeHtml(t("status_pending")) + "</option>" +
+                '<option value="approved"' + (report.status === "approved" ? " selected" : "") + ">" + escapeHtml(t("status_approved")) + "</option>" +
+              "</select>" +
+            "</td>" +
             td(formatDate(report.createdAt || report.date)) +
             "<td>" + renderAttachmentActions(report.attachments) + "</td>" +
           "</tr>"
@@ -1314,6 +1351,11 @@
       return;
     }
 
+    if (action === "view-image") {
+      showImageSourceModal(button.getAttribute("data-image"));
+      return;
+    }
+
     if (action === "logout-session") {
       adminLogout();
       return;
@@ -1324,6 +1366,10 @@
         platform.resetPlatformData();
         window.location.href = "admin-login.html";
       }
+      return;
+    }
+
+    if (action === "update-report-status") {
       return;
     }
 
@@ -1378,6 +1424,43 @@
     }
   }
 
+  function handleStatusChange(event) {
+    var select = event.target.closest("[data-action='update-report-status']");
+    if (!select) {
+      return;
+    }
+
+    var admin = platform.getCurrentAdmin();
+    if (!admin) {
+      return;
+    }
+
+    var reportId = select.getAttribute("data-report-id");
+    var reports = platform.getReports();
+    var report = reports.find(function (r) { return String(r.id) === String(reportId); });
+
+    if (!report) {
+      alert("Report not found.");
+      return;
+    }
+
+    if (!platform.isSuperAdmin(admin) && admin.ministryId !== report.ministryId) {
+      alert(t("no_ministry_access"));
+      // Reset select to original status
+      select.value = report.status;
+      return;
+    }
+
+    var newStatus = select.value;
+
+    if (platform.updateReportStatus(reportId, newStatus, admin)) {
+      renderReportsPage(admin);
+    } else {
+      alert("Failed to update status.");
+      select.value = report.status;
+    }
+  }
+
   function bindAdminLayoutEvents() {
     document.getElementById("openSidebar") && document.getElementById("openSidebar").addEventListener("click", openSidebar);
     document.getElementById("closeSidebar") && document.getElementById("closeSidebar").addEventListener("click", closeSidebar);
@@ -1387,6 +1470,7 @@
     document.getElementById("lightModeBtn") && document.getElementById("lightModeBtn").addEventListener("click", function () { applyTheme("light"); });
     document.getElementById("darkModeBtn") && document.getElementById("darkModeBtn").addEventListener("click", function () { applyTheme("dark"); });
     document.addEventListener("click", handleActionClick);
+    document.addEventListener("change", handleStatusChange);
   }
 
   document.addEventListener("DOMContentLoaded", function () {

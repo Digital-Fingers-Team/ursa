@@ -533,6 +533,23 @@
     return readJSON(STORAGE_KEYS.complaints, []);
   }
 
+  function saveReports(reports) {
+    writeJSON(STORAGE_KEYS.complaints, reports);
+  }
+
+  function updateReportStatus(reportId, newStatus, actor) {
+    var reports = getReports();
+    var report = reports.find(function (r) { return String(r.id) === String(reportId); });
+    if (report) {
+      report.status = newStatus;
+      report.updatedAt = nowIso();
+      saveReports(reports);
+      logActivity("report_status_updated", "Status updated to " + newStatus, { reportId: reportId, status: newStatus }, actor && actor.id);
+      return true;
+    }
+    return false;
+  }
+
   function getAuditLog() {
     return getPlatformState().auditLog;
   }
@@ -1268,6 +1285,7 @@
     SESSION_KEYS: SESSION_KEYS,
     MINISTRY_ROUTES: MINISTRY_ROUTES,
     CORE_MINISTRIES: CORE_MINISTRIES,
+    createId: createId,
     escapeHtml: escapeHtml,
     hashPassword: hashPassword,
     createPasswordRecord: createPasswordRecord,
@@ -1289,6 +1307,8 @@
     getAdminAccounts: getAdminAccounts,
     getCitizens: getCitizens,
     getReports: getReports,
+    saveReports: saveReports,
+    updateReportStatus: updateReportStatus,
     getAuditLog: getAuditLog,
     logActivity: logActivity,
     getCurrentAdmin: getCurrentAdmin,

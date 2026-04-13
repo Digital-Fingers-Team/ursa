@@ -141,6 +141,7 @@ const USER_TRANSLATIONS = {
     report_type_message_badge: "رسالة",
     report_type_complaint_badge: "شكوى",
     status_pending: "قيد المراجعة",
+    status_approved: "معتمد",
     status_resolved: "تم الحل",
     status_in_progress: "جارٍ المتابعة",
     validation_select_type: "اختر نوع الطلب أولاً.",
@@ -258,6 +259,7 @@ const USER_TRANSLATIONS = {
     report_type_message_badge: "Message",
     report_type_complaint_badge: "Complaint",
     status_pending: "Pending Review",
+    status_approved: "Approved",
     status_resolved: "Resolved",
     status_in_progress: "In Progress",
     validation_select_type: "Please choose the request type first.",
@@ -405,6 +407,7 @@ function getRequestTypeLabel(type) {
 }
 
 function getStatusLabel(status) {
+  if (status === "approved") return t("status_approved");
   if (status === "resolved") return t("status_resolved");
   if (status === "in_progress") return t("status_in_progress");
   return t("status_pending");
@@ -865,6 +868,11 @@ function optimizeImageFile(file, onSuccess, onError) {
         canvas.height = height;
         const context = canvas.getContext('2d');
         if (!context) {
+          const dataUrl = ev && ev.target ? ev.target.result : null;
+          if (dataUrl) {
+            onSuccess && onSuccess(dataUrl);
+            return;
+          }
           onError && onError(new Error('Canvas is not supported'));
           return;
         }
@@ -873,16 +881,42 @@ function optimizeImageFile(file, onSuccess, onError) {
         const compressed = canvas.toDataURL('image/jpeg', 0.72);
         onSuccess && onSuccess(compressed);
       } catch (error) {
-        onError && onError(error);
+        const dataUrl = ev && ev.target ? ev.target.result : null;
+        if (dataUrl) {
+          onSuccess && onSuccess(dataUrl);
+        } else {
+          onError && onError(error);
+        }
       }
     };
     img.onerror = function() {
-      onError && onError(new Error('Invalid image'));
+      const dataUrl = ev && ev.target ? ev.target.result : null;
+      if (dataUrl) {
+        onSuccess && onSuccess(dataUrl);
+      } else {
+        onError && onError(new Error('Invalid image'));
+      }
     };
-    img.src = ev.target.result;
+    img.src = ev && ev.target ? ev.target.result : "";
   };
   reader.onerror = function() {
-    onError && onError(new Error('Failed to read file'));
+    try {
+      const fallback = new FileReader();
+      fallback.onload = function(ev2) {
+        const dataUrl = ev2 && ev2.target ? ev2.target.result : null;
+        if (dataUrl) {
+          onSuccess && onSuccess(dataUrl);
+        } else {
+          onError && onError(new Error('Failed to read file'));
+        }
+      };
+      fallback.onerror = function() {
+        onError && onError(new Error('Failed to read file'));
+      };
+      fallback.readAsDataURL(file);
+    } catch (_) {
+      onError && onError(new Error('Failed to read file'));
+    }
   };
   reader.readAsDataURL(file);
 }
@@ -934,7 +968,7 @@ async function handleReportSubmit(event) {
   }
 
   const complaint = {
-    id: Date.now(),
+    id: "REP-" + Date.now() + "-" + Math.floor(Math.random() * 1000),
     type: reportType,
     description: description,
     category: finalCategory,
@@ -1010,7 +1044,7 @@ function handleLogin(e) {
   }
 }
 
-function handleRegister(e) {
+async function handleRegister(e) {
   e.preventDefault();
   const errorEl = document.getElementById('registerError');
   const successEl = document.getElementById('registerSuccess');
@@ -1068,9 +1102,25 @@ function handleRegister(e) {
     return;
   }
 
-  optimizeImageFile(idCardInput.files[0], function(idCardImage) {
-    const newUser = { fullName, nationalId, governorate, phone, password, idCardImage, role: 'citizen' };
+  optimizeImageFile(idCardInput.files[0], async function(idCardImage) {
     try {
+      const idCardRecord = await createAttachmentRecord("image", {
+        dataUrl: idCardImage,
+        file: idCardInput.files[0],
+        fileName: idCardInput.files[0].name || `id-card-${Date.now()}.jpg`,
+        mimeType: idCardInput.files[0].type || "image/jpeg"
+      });
+
+      const newUser = {
+        fullName,
+        nationalId,
+        governorate,
+        phone,
+        password,
+        idCardAttachmentId: idCardRecord ? idCardRecord.id : null,
+        role: 'citizen'
+      };
+
       users.push(newUser);
       setUsers(users);
       setCurrentUser(newUser);
